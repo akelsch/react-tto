@@ -100,9 +100,10 @@ class Game extends React.Component {
       const x = step.coordinates[0];
       const y = step.coordinates[1];
       const desc = move ? "Move (" + x + ", " + y + ")" : "Game start";
+      const bold = (move === this.state.stepNumber) ? {fontWeight: "bold"} : {};
       return (
         <li key={move}>
-          <a href="#" onClick={() => this.jumpTo(move)}>{desc}</a>
+          <a href="#" style={bold} onClick={() => this.jumpTo(move)}>{desc}</a>
         </li>
       );
     });
