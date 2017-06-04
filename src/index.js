@@ -50,6 +50,8 @@ class Game extends React.Component {
       ],
       stepNumber: 0,
       xIsNext: true,
+      sortedHistory: [],
+      sorted: false,
     };
   }
 
@@ -86,8 +88,31 @@ class Game extends React.Component {
     });
   }
 
+  sortMoves(history) {
+    let sorted = this.state.sorted;
+
+    history.sort((a, b) => {
+      if (a.coordinates[0] === b.coordinates[0]) {
+        return sorted ?
+          a.coordinates[1] - b.coordinates[1] :
+          b.coordinates[1] - a.coordinates[1];
+      }
+      return sorted ?
+        a.coordinates[0] - b.coordinates[0] :
+        b.coordinates[0] - a.coordinates[0];
+    });
+
+    this.setState({
+      sortedHistory: history,
+      sorted: !sorted,
+    });
+  }
+
   render() {
     const history = this.state.history;
+    const sortedHistory = this.state.sortedHistory.filter(
+      e => e.coordinates[0] || e.coordinates[1]
+    );
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
@@ -99,6 +124,17 @@ class Game extends React.Component {
       return (
         <li key={move}>
           <a href="#" style={bold} onClick={() => this.jumpTo(move)}>{desc}</a>
+        </li>
+      );
+    });
+
+    const sortedMoves = sortedHistory.map((step, move) => {
+      const x = step.coordinates[0];
+      const y = step.coordinates[1];
+      const desc = "Move (" + x + ", " + y + ")";
+      return (
+        <li key={move}>
+          <a href="#">{desc}</a>
         </li>
       );
     });
@@ -121,6 +157,13 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol start="0">{moves}</ol>
+          <button onClick={() => this.sortMoves(history.slice())}>
+            Sort
+          </button>
+        </div>
+        <div className="game-info">
+          <div>Sorted Moves</div>
+          <ol>{sortedMoves}</ol>
         </div>
       </div>
     );
